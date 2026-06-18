@@ -114,11 +114,17 @@
     overflow-x:auto;
     align-items:flex-start;
   }
+  .weekstack{
+    display:flex;
+    flex-direction:column;
+    gap:20px;
+    flex:1;
+    min-width:0;
+  }
   .weekgroup{
     display:flex;
     flex-direction:column;
     gap:8px;
-    flex-shrink:0;
   }
   .weekgroup-header{
     font-size:0.8rem;
@@ -130,6 +136,7 @@
   .weekgroup-row{
     display:flex;
     gap:14px;
+    flex-wrap:wrap;
   }
   .column{
     background:#fff;
@@ -212,6 +219,10 @@
     font-size:0.87rem;
     margin-bottom:4px;
     color:var(--ink);
+    cursor:pointer;
+  }
+  .card .title:hover{
+    text-decoration:underline;
   }
   .card .meta{
     font-size:0.75rem;
@@ -238,6 +249,18 @@
     padding:2px 8px;
     margin-bottom:5px;
     margin-right:4px;
+  }
+  .card .who-badge{
+    display:inline-block;
+    font-size:0.85rem;
+    margin-right:4px;
+    margin-bottom:5px;
+    vertical-align:middle;
+  }
+  .card .location-row{
+    font-size:0.74rem;
+    color:var(--muted);
+    margin-top:5px;
   }
   .card-actions{
     position:absolute;
@@ -335,6 +358,14 @@
     color:var(--muted);
     cursor:pointer;
   }
+  .searchbox{
+    padding:7px 12px;
+    font-size:0.8rem;
+    border:1px solid #d8dae0;
+    border-radius:8px;
+    font-family:inherit;
+    min-width:160px;
+  }
 
   .syncstatus{
     font-size:0.76rem;
@@ -376,7 +407,7 @@
     margin:6px 0 3px;
   }
   .form label:first-child{margin-top:0;}
-  .form input, .form select{
+  .form input, .form select, .form textarea{
     width:100%;
     margin-bottom:2px;
     padding:6px 7px;
@@ -385,6 +416,22 @@
     border-radius:6px;
     font-family:inherit;
   }
+  .form textarea{
+    resize:vertical;
+    min-height:50px;
+  }
+  .form button.maplookup{
+    width:100%;
+    background:#fff;
+    border:1px solid #ccc;
+    border-radius:6px;
+    padding:6px;
+    font-size:0.78rem;
+    cursor:pointer;
+    margin-bottom:6px;
+    color:var(--muted);
+  }
+  .form button.maplookup:hover{background:#f3f6fb;border-color:var(--accent);color:var(--accent);}
   .form .formbtns{
     display:flex;
     gap:6px;
@@ -413,6 +460,85 @@
     height:32px;
     cursor:pointer;
   }
+
+  /* card detail modal */
+  .modal-backdrop{
+    position:fixed;
+    inset:0;
+    background:rgba(20,20,40,0.55);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    z-index:100;
+    padding:20px;
+  }
+  .modal-panel{
+    background:#fff;
+    border-radius:12px;
+    padding:20px;
+    max-width:420px;
+    width:100%;
+    max-height:85vh;
+    overflow-y:auto;
+    box-shadow:0 10px 40px rgba(0,0,0,0.3);
+  }
+  .modal-title{
+    font-size:1.1rem;
+    font-weight:700;
+    margin-bottom:8px;
+    color:var(--ink);
+  }
+  .modal-meta{
+    font-size:0.85rem;
+    color:var(--muted);
+    line-height:1.5;
+    margin:8px 0;
+  }
+  .modal-section-label{
+    font-size:0.7rem;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:0.03em;
+    color:#9aa0ac;
+    margin:14px 0 4px;
+  }
+  .modal-notes{
+    font-size:0.85rem;
+    color:var(--ink);
+    white-space:pre-wrap;
+    line-height:1.5;
+  }
+  .modal-link{
+    display:inline-block;
+    margin-top:6px;
+    color:var(--accent);
+    font-size:0.85rem;
+    font-weight:600;
+    text-decoration:none;
+  }
+  .modal-link:hover{text-decoration:underline;}
+  .modal-map{
+    width:100%;
+    height:200px;
+    border:none;
+    border-radius:8px;
+    margin-top:4px;
+    display:block;
+  }
+  .modal-close{
+    display:block;
+    width:100%;
+    margin-top:16px;
+    background:#f1f2f6;
+    border:none;
+    border-radius:8px;
+    padding:9px;
+    font-size:0.85rem;
+    font-weight:600;
+    color:var(--ink);
+    cursor:pointer;
+  }
+  .modal-close:hover{background:#e3e5ea;}
 </style>
 </head>
 <body>
@@ -429,6 +555,8 @@
 <div class="toolbar">
   <button id="resetBtn">Reset to default layout</button>
   <button id="clearBtn">Clear board (start empty)</button>
+  <button id="todayBtn">📍 Jump to today</button>
+  <input type="text" id="searchBox" class="searchbox" placeholder="Search cards…">
   <div class="viewtoggle" id="viewToggle">
     <button data-view="day">Day view</button>
     <button data-view="week">Week view</button>
@@ -523,6 +651,17 @@ function getPriority(id){
   return PRIORITIES.find(p => p.id === id) || PRIORITIES[0];
 }
 
+const WHO_OPTIONS = [
+  { id: "", label: "Not set", icon: "" },
+  { id: "mine", label: "Mine", icon: "🙋" },
+  { id: "mario", label: "Mario's", icon: "🧒" },
+  { id: "both", label: "Both", icon: "👥" },
+  { id: "family", label: "Family", icon: "👨‍👩‍👧‍👦" },
+];
+function getWho(id){
+  return WHO_OPTIONS.find(w => w.id === id) || WHO_OPTIONS[0];
+}
+
 const defaultCards = [
   { id:"c1", col:"ideas", type:"free", title:"Praia do Recreio", meta:"📍 Recreio · 👥 Both<br>💰 Free — beach day, surf vibe but family-friendly", time:"" },
   { id:"c2", col:"ideas", type:"free", title:"Praia do Pontal", meta:"📍 Recreio · 👥 Both<br>💰 Free — calmer water on the right side, good for swimming", time:"" },
@@ -565,6 +704,10 @@ function migrate(s){
     time: "",
     starred: false,
     priority: "",
+    location: "",
+    notes: "",
+    url: "",
+    who: "",
     ...c,
     col: validIds.has(c.col) ? c.col : "ideas",
   }));
@@ -582,6 +725,7 @@ function getCategory(typeId){
 let state = migrate(load());
 let editingId = null;
 let activeCategoryFilter = null;
+let searchQuery = "";
 
 // Display-only preferences (view mode, hide-empty-days) — kept per-device in
 // localStorage, separate from the synced board `state`, since they're not
@@ -616,6 +760,13 @@ function escapeAttr(s){
     .replace(/"/g, "&quot;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;");
+}
+
+// Forces a real http(s) link so a stray "javascript:" or similar can never
+// end up as the href — worst case it 404s as "https://javascript:...".
+function safeUrl(u){
+  const s = String(u || "").trim();
+  return /^https?:\/\//i.test(s) ? s : "https://" + s;
 }
 
 function renderLegend(){
@@ -706,6 +857,12 @@ function showCategoryForm(cat){
 function getColumnCards(col){
   let colCards = state.cards.filter(c => c.col === col.id);
   if(activeCategoryFilter) colCards = colCards.filter(c => c.type === activeCategoryFilter);
+  if(searchQuery){
+    colCards = colCards.filter(c => {
+      const haystack = [c.title, c.meta, c.location, c.notes].join(" ").toLowerCase();
+      return haystack.includes(searchQuery);
+    });
+  }
   if(isDateCol(col.id)){
     colCards = colCards.slice().sort((a, b) => {
       if(a.time && b.time) return a.time.localeCompare(b.time);
@@ -763,6 +920,8 @@ function render(){
   if(ideasCol) board.appendChild(buildColumnEl(ideasCol, today));
 
   if(viewPrefs.mode === "week"){
+    const weekStack = document.createElement("div");
+    weekStack.className = "weekstack";
     for(let i = 0; i < dateCols.length; i += 7){
       const weekCols = dateCols.slice(i, i + 7);
       const visibleCols = viewPrefs.hideEmpty
@@ -783,8 +942,9 @@ function render(){
       visibleCols.forEach(col => row.appendChild(buildColumnEl(col, today)));
       group.appendChild(row);
 
-      board.appendChild(group);
+      weekStack.appendChild(group);
     }
+    board.appendChild(weekStack);
   }else{
     dateCols.forEach(col => board.appendChild(buildColumnEl(col, today)));
   }
@@ -798,17 +958,21 @@ function buildCard(c){
   el.style.borderLeftColor = getCategory(c.type).color;
   el.dataset.id = c.id;
   const prio = getPriority(c.priority);
+  const who = getWho(c.who);
   const priorityBadge = prio.id ? `<span class="priority-badge" style="color:${prio.color}">${prio.emoji} ${prio.label}</span>` : "";
   const timeBadge = c.time ? `<span class="time-badge">🕐 ${c.time}</span>` : "";
+  const whoBadge = who.icon ? `<span class="who-badge" title="${escapeAttr(who.label)}">${who.icon}</span>` : "";
+  const locationRow = c.location ? `<div class="location-row">📍 ${escapeAttr(c.location)}</div>` : "";
   el.innerHTML = `
     <div class="card-actions">
       <button class="star${c.starred ? " active" : ""}" title="must-do">${c.starred ? "★" : "☆"}</button>
       <button class="edit" title="edit">✎</button>
       <button class="del" title="remove">×</button>
     </div>
-    ${priorityBadge}${timeBadge}
-    <div class="title">${c.title}</div>
+    ${priorityBadge}${timeBadge}${whoBadge}
+    <div class="title" title="click for details">${escapeAttr(c.title)}</div>
     <div class="meta">${c.meta}</div>
+    ${locationRow}
   `;
   el.querySelector(".del").onclick = (e) => {
     e.stopPropagation();
@@ -825,8 +989,103 @@ function buildCard(c){
     c.starred = !c.starred;
     save(); render();
   };
+  el.querySelector(".title").onclick = (e) => {
+    e.stopPropagation();
+    openCardDetail(c);
+  };
   attachDrag(el, c.id);
   return el;
+}
+
+function closeCardDetail(){
+  const existing = document.querySelector(".modal-backdrop");
+  if(existing) existing.remove();
+}
+
+function openCardDetail(c){
+  closeCardDetail();
+  const cat = getCategory(c.type);
+  const prio = getPriority(c.priority);
+  const who = getWho(c.who);
+
+  const backdrop = document.createElement("div");
+  backdrop.className = "modal-backdrop";
+  backdrop.onclick = (e) => { if(e.target === backdrop) closeCardDetail(); };
+
+  const panel = document.createElement("div");
+  panel.className = "modal-panel";
+  panel.style.borderTop = `4px solid ${cat.color}`;
+
+  const titleEl = document.createElement("div");
+  titleEl.className = "modal-title";
+  titleEl.textContent = (who.icon ? who.icon + " " : "") + c.title;
+  panel.appendChild(titleEl);
+
+  if(prio.id){
+    const badge = document.createElement("span");
+    badge.className = "priority-badge";
+    badge.style.color = prio.color;
+    badge.textContent = `${prio.emoji} ${prio.label}`;
+    panel.appendChild(badge);
+  }
+
+  if(c.meta){
+    const meta = document.createElement("div");
+    meta.className = "modal-meta";
+    meta.innerHTML = c.meta; // intentional <br> support, matches the card front
+    panel.appendChild(meta);
+  }
+
+  if(c.notes){
+    const notesLabel = document.createElement("div");
+    notesLabel.className = "modal-section-label";
+    notesLabel.textContent = "Notes";
+    panel.appendChild(notesLabel);
+    const notes = document.createElement("div");
+    notes.className = "modal-notes";
+    notes.textContent = c.notes;
+    panel.appendChild(notes);
+  }
+
+  if(c.url){
+    const link = document.createElement("a");
+    link.className = "modal-link";
+    link.href = safeUrl(c.url);
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
+    link.textContent = "🔗 " + c.url;
+    panel.appendChild(link);
+  }
+
+  if(c.location){
+    const locLabel = document.createElement("div");
+    locLabel.className = "modal-section-label";
+    locLabel.textContent = "Location";
+    panel.appendChild(locLabel);
+
+    const iframe = document.createElement("iframe");
+    iframe.className = "modal-map";
+    iframe.src = "https://www.google.com/maps?q=" + encodeURIComponent(c.location) + "&output=embed";
+    iframe.loading = "lazy";
+    panel.appendChild(iframe);
+
+    const dirLink = document.createElement("a");
+    dirLink.className = "modal-link";
+    dirLink.href = "https://www.google.com/maps/dir/?api=1&destination=" + encodeURIComponent(c.location);
+    dirLink.target = "_blank";
+    dirLink.rel = "noopener noreferrer";
+    dirLink.textContent = "🧭 Get directions";
+    panel.appendChild(dirLink);
+  }
+
+  const closeBtn = document.createElement("button");
+  closeBtn.className = "modal-close";
+  closeBtn.textContent = "Close";
+  closeBtn.onclick = closeCardDetail;
+  panel.appendChild(closeBtn);
+
+  backdrop.appendChild(panel);
+  document.body.appendChild(backdrop);
 }
 
 function buildEditCard(c){
@@ -857,6 +1116,9 @@ function buildFormFields(existing, defaultCol, onSave, onCancel){
   const priorityOptions = PRIORITIES.map(p =>
     `<option value="${p.id}">${p.emoji ? p.emoji + " " : ""}${p.label}</option>`
   ).join("");
+  const whoOptions = WHO_OPTIONS.map(w =>
+    `<option value="${w.id}">${w.icon ? w.icon + " " : ""}${w.label}</option>`
+  ).join("");
   form.innerHTML = `
     <label>Title</label>
     <input type="text" class="f-title" placeholder="e.g. Sugarloaf cable car" value="${existing ? escapeAttr(existing.title) : ""}">
@@ -866,19 +1128,35 @@ function buildFormFields(existing, defaultCol, onSave, onCancel){
     <select class="f-type">${typeOptions}</select>
     <label>Priority</label>
     <select class="f-priority">${priorityOptions}</select>
+    <label>Who</label>
+    <select class="f-who">${whoOptions}</select>
     <label>Day</label>
     <select class="f-col">${dayOptions}</select>
     <label>Time (optional)</label>
     <input type="time" class="f-time" value="${existing ? escapeAttr(existing.time || "") : ""}">
+    <label>Location (optional)</label>
+    <input type="text" class="f-location" placeholder="e.g. Sugarloaf Mountain, Urca" value="${existing ? escapeAttr(existing.location || "") : ""}">
+    <button type="button" class="maplookup">🔍 Search this on Google Maps</button>
+    <label>URL (optional)</label>
+    <input type="text" class="f-url" placeholder="e.g. booking link or website" value="${existing ? escapeAttr(existing.url || "") : ""}">
+    <label>Notes (optional)</label>
+    <textarea class="f-notes" placeholder="Anything else — reminders, tips, booking refs..."></textarea>
     <div class="formbtns">
       <button class="primary">${existing ? "Save" : "Add"}</button>
       <button class="cancel">Cancel</button>
     </div>
   `;
+  form.querySelector(".f-notes").value = existing ? (existing.notes || "") : "";
   if(existing){
     form.querySelector(".f-type").value = existing.type;
     form.querySelector(".f-priority").value = existing.priority || "";
+    form.querySelector(".f-who").value = existing.who || "";
   }
+  form.querySelector(".maplookup").onclick = () => {
+    const val = form.querySelector(".f-location").value.trim();
+    if(!val) return;
+    window.open("https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(val), "_blank");
+  };
   form.querySelector(".primary").onclick = () => {
     const title = form.querySelector(".f-title").value.trim();
     if(!title) return;
@@ -894,8 +1172,12 @@ function buildFormFields(existing, defaultCol, onSave, onCancel){
       type: form.querySelector(".f-type").value,
       priority,
       starred,
+      who: form.querySelector(".f-who").value,
       col: form.querySelector(".f-col").value,
       time: form.querySelector(".f-time").value,
+      location: form.querySelector(".f-location").value.trim(),
+      url: form.querySelector(".f-url").value.trim(),
+      notes: form.querySelector(".f-notes").value.trim(),
     });
   };
   form.querySelector(".cancel").onclick = onCancel;
@@ -916,7 +1198,7 @@ let dragData = null;
 
 function attachDrag(el, id){
   el.addEventListener("pointerdown", (e) => {
-    if(e.target.closest(".card-actions")) return;
+    if(e.target.closest(".card-actions") || e.target.closest(".title")) return;
     e.preventDefault();
     const rect = el.getBoundingClientRect();
     dragData = {
@@ -987,6 +1269,17 @@ document.getElementById("hideEmptyChk").onchange = (e) => {
   viewPrefs.hideEmpty = e.target.checked;
   saveViewPrefs(); render();
 };
+document.getElementById("todayBtn").onclick = () => {
+  const todayCol = document.querySelector(".column.today");
+  if(todayCol) todayCol.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+};
+document.getElementById("searchBox").oninput = (e) => {
+  searchQuery = e.target.value.trim().toLowerCase();
+  render();
+};
+document.addEventListener("keydown", (e) => {
+  if(e.key === "Escape") closeCardDetail();
+});
 
 // --- Online sync (Firebase Firestore) ---
 let boardDocRef = null;
