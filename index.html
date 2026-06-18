@@ -10,6 +10,7 @@
     --paid:#ef6c00;
     --city:#1565c0;
     --adv:#6a1b9a;
+    --food:#c62828;
     --bg:#eef1f6;
     --card-bg:#ffffff;
     --ink:#1a1a2e;
@@ -189,6 +190,7 @@
   .card.type-paid{border-left-color:var(--paid);}
   .card.type-city{border-left-color:var(--city);}
   .card.type-adv{border-left-color:var(--adv);}
+  .card.type-food{border-left-color:var(--food);}
 
   .addbtn{
     margin-top:9px;
@@ -317,6 +319,7 @@
   <span><span class="dot" style="background:var(--paid)"></span>Paid, short drive (Barra)</span>
   <span><span class="dot" style="background:var(--city)"></span>Classic Rio day trip</span>
   <span><span class="dot" style="background:var(--adv)"></span>Dad &amp; son adventure / splurge</span>
+  <span><span class="dot" style="background:var(--food)"></span>Food / restaurant</span>
 </div>
 
 <div class="toolbar">
@@ -544,6 +547,7 @@ function buildFormFields(existing, defaultCol, onSave, onCancel){
       <option value="paid">Paid / short drive</option>
       <option value="city">Classic Rio day trip</option>
       <option value="adv">Adventure / splurge</option>
+      <option value="food">Food / restaurant</option>
     </select>
     <label>Day</label>
     <select class="f-col">${dayOptions}</select>
