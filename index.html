@@ -6,11 +6,6 @@
 <title>Rio Itinerary Board — Mario & Carlos</title>
 <style>
   :root{
-    --free:#2e7d32;
-    --paid:#ef6c00;
-    --city:#1565c0;
-    --adv:#6a1b9a;
-    --food:#c62828;
     --bg:#eef1f6;
     --card-bg:#ffffff;
     --ink:#1a1a2e;
@@ -42,10 +37,14 @@
     color:rgba(255,255,255,0.85);
     font-size:0.9rem;
   }
+  .legendwrap{
+    position:relative;
+  }
   .legend{
     display:flex;
     gap:10px;
     flex-wrap:wrap;
+    align-items:center;
     padding:14px 26px;
     font-size:0.78rem;
   }
@@ -55,12 +54,39 @@
     gap:6px;
     background:#fff;
     border-radius:999px;
-    padding:5px 12px 5px 8px;
+    padding:5px 10px 5px 8px;
     box-shadow:0 1px 2px rgba(0,0,0,0.08);
     color:var(--muted);
   }
   .dot{
     width:9px;height:9px;border-radius:50%;display:inline-block;
+  }
+  .legend-edit{
+    background:none;
+    border:none;
+    color:#b3b6bf;
+    font-size:0.7rem;
+    cursor:pointer;
+    padding:0 2px;
+    line-height:1;
+  }
+  .legend-edit:hover{color:var(--accent);}
+  .addcatbtn{
+    background:none;
+    border:1px dashed #c3c6cf;
+    border-radius:999px;
+    padding:5px 12px;
+    font-size:0.78rem;
+    color:var(--muted);
+    cursor:pointer;
+  }
+  .addcatbtn:hover{background:#fff;border-color:var(--accent);color:var(--accent);}
+  .catform{
+    position:absolute;
+    top:100%;
+    left:26px;
+    width:240px;
+    z-index:30;
   }
   .board{
     display:flex;
@@ -186,11 +212,6 @@
   }
   .card-actions .edit:hover{color:var(--accent);background:#e3edf9;}
   .card-actions .del:hover{color:#c00;background:#fbe4e4;}
-  .card.type-free{border-left-color:var(--free);}
-  .card.type-paid{border-left-color:var(--paid);}
-  .card.type-city{border-left-color:var(--city);}
-  .card.type-adv{border-left-color:var(--adv);}
-  .card.type-food{border-left-color:var(--food);}
 
   .addbtn{
     margin-top:9px;
@@ -253,7 +274,7 @@
     background:#999;
     display:inline-block;
   }
-  .syncstatus.online .sdot{background:var(--free);}
+  .syncstatus.online .sdot{background:#2e7d32;}
   .syncstatus.offline .sdot{background:#999;}
   .syncstatus.error .sdot{background:#c00;}
 
@@ -305,6 +326,13 @@
   }
   .form button.primary:hover{background:var(--accent-dark);}
   .form button.cancel:hover{background:#f0f0f0;}
+  .form button.danger{border-color:#c00;color:#c00;}
+  .form button.danger:hover{background:#fbe4e4;}
+  .form input[type="color"]{
+    padding:2px;
+    height:32px;
+    cursor:pointer;
+  }
 </style>
 </head>
 <body>
@@ -314,12 +342,8 @@
   <p>Drag cards onto a day to plan the ~3 weeks in Rio (27 Jun – 20 Jul). Staying at mom's house, Recreio dos Bandeirantes.</p>
 </header>
 
-<div class="legend">
-  <span><span class="dot" style="background:var(--free)"></span>Free / cheap, right in Recreio</span>
-  <span><span class="dot" style="background:var(--paid)"></span>Paid, short drive (Barra)</span>
-  <span><span class="dot" style="background:var(--city)"></span>Classic Rio day trip</span>
-  <span><span class="dot" style="background:var(--adv)"></span>Dad &amp; son adventure / splurge</span>
-  <span><span class="dot" style="background:var(--food)"></span>Food / restaurant</span>
+<div class="legendwrap" id="legendWrap">
+  <div class="legend" id="legend"></div>
 </div>
 
 <div class="toolbar">
@@ -386,6 +410,16 @@ const defaultColumns = [
   { id: "booked", title: "Booked / Confirmed" },
 ];
 
+// Categories live in `state` (not hardcoded CSS) so new ones can be added
+// from the board itself, with no code/file update needed.
+const defaultCategories = [
+  { id: "free", label: "Free / cheap, right in Recreio", color: "#2e7d32" },
+  { id: "paid", label: "Paid, short drive (Barra)", color: "#ef6c00" },
+  { id: "city", label: "Classic Rio day trip", color: "#1565c0" },
+  { id: "adv", label: "Dad & son adventure / splurge", color: "#6a1b9a" },
+  { id: "food", label: "Food / restaurant", color: "#c62828" },
+];
+
 const defaultCards = [
   { id:"c1", col:"ideas", type:"free", title:"Praia do Recreio", meta:"📍 Recreio · 👥 Both<br>💰 Free — beach day, surf vibe but family-friendly", time:"" },
   { id:"c2", col:"ideas", type:"free", title:"Praia do Pontal", meta:"📍 Recreio · 👥 Both<br>💰 Free — calmer water on the right side, good for swimming", time:"" },
@@ -406,17 +440,22 @@ const defaultCards = [
   { id:"c17", col:"ideas", type:"adv", title:"Helicopter tour over Rio", meta:"📍 Lagoa/Urca · 👥 Both<br>💰 From ~R$690-1040/person (15-30min) — splurge", time:"" },
 ];
 
+// Defaults are plain objects edited in place (card edits, category edits) —
+// clone before handing them out so editing never mutates the shared consts.
+function clone(x){ return JSON.parse(JSON.stringify(x)); }
+
 function load(){
   try{
     const raw = localStorage.getItem(STORAGE_KEY);
     if(raw) return JSON.parse(raw);
   }catch(e){}
-  return { columns: defaultColumns, cards: defaultCards };
+  return { columns: defaultColumns, cards: clone(defaultCards), categories: clone(defaultCategories) };
 }
 
 // Keeps cards from older saves (week1/week2/week3 columns, or anything
 // since-removed) instead of losing them — they fall back to Ideas and the
-// user can drag them onto a specific day.
+// user can drag them onto a specific day. Also backfills `categories` for
+// boards saved before category management existed.
 function migrate(s){
   const validIds = new Set(defaultColumns.map(c => c.id));
   s.cards = (s.cards || []).map(c => ({
@@ -425,7 +464,14 @@ function migrate(s){
     col: validIds.has(c.col) ? c.col : "ideas",
   }));
   s.columns = defaultColumns;
+  s.categories = (Array.isArray(s.categories) && s.categories.length) ? s.categories : clone(defaultCategories);
   return s;
+}
+
+const OTHER_CATEGORY = { id: "other", label: "Other", color: "#9aa0ac" };
+
+function getCategory(typeId){
+  return state.categories.find(cat => cat.id === typeId) || OTHER_CATEGORY;
 }
 
 let state = migrate(load());
@@ -450,7 +496,78 @@ function escapeAttr(s){
     .replace(/>/g, "&gt;");
 }
 
+function renderLegend(){
+  const legend = document.getElementById("legend");
+  legend.innerHTML = "";
+  state.categories.forEach(cat => {
+    const span = document.createElement("span");
+    const dot = document.createElement("span");
+    dot.className = "dot";
+    dot.style.background = cat.color;
+    span.appendChild(dot);
+    span.appendChild(document.createTextNode(cat.label));
+    const editBtn = document.createElement("button");
+    editBtn.className = "legend-edit";
+    editBtn.title = "edit category";
+    editBtn.textContent = "✎";
+    editBtn.onclick = (e) => { e.stopPropagation(); showCategoryForm(cat); };
+    span.appendChild(editBtn);
+    legend.appendChild(span);
+  });
+  const addBtn = document.createElement("button");
+  addBtn.className = "addcatbtn";
+  addBtn.textContent = "+ Category";
+  addBtn.onclick = (e) => { e.stopPropagation(); showCategoryForm(null); };
+  legend.appendChild(addBtn);
+}
+
+function closeCategoryForm(){
+  const existing = document.querySelector(".catform");
+  if(existing) existing.remove();
+}
+
+function showCategoryForm(cat){
+  closeCategoryForm();
+  const wrap = document.getElementById("legendWrap");
+  const panel = document.createElement("div");
+  panel.className = "form catform";
+  panel.innerHTML = `
+    <label>Category name</label>
+    <input type="text" class="cf-label" placeholder="e.g. Nightlife" value="${cat ? escapeAttr(cat.label) : ""}">
+    <label>Colour</label>
+    <input type="color" class="cf-color" value="${cat ? cat.color : "#1565c0"}">
+    <div class="formbtns">
+      <button class="primary">${cat ? "Save" : "Add"}</button>
+      ${cat ? '<button class="danger">Delete</button>' : ""}
+      <button class="cancel">Cancel</button>
+    </div>
+  `;
+  panel.querySelector(".primary").onclick = () => {
+    const label = panel.querySelector(".cf-label").value.trim();
+    if(!label) return;
+    const color = panel.querySelector(".cf-color").value;
+    if(cat){
+      cat.label = label;
+      cat.color = color;
+    }else{
+      state.categories.push({ id: "cat" + Date.now(), label, color });
+    }
+    save(); closeCategoryForm(); render();
+  };
+  if(cat){
+    panel.querySelector(".danger").onclick = () => {
+      if(confirm(`Delete "${cat.label}"? Cards using it will show as "Other".`)){
+        state.categories = state.categories.filter(c => c.id !== cat.id);
+        save(); closeCategoryForm(); render();
+      }
+    };
+  }
+  panel.querySelector(".cancel").onclick = () => closeCategoryForm();
+  wrap.appendChild(panel);
+}
+
 function render(){
+  renderLegend();
   board.innerHTML = "";
   const today = todayISO();
   state.columns.forEach(col => {
@@ -489,7 +606,8 @@ function render(){
 
 function buildCard(c){
   const el = document.createElement("div");
-  el.className = `card type-${c.type}`;
+  el.className = "card";
+  el.style.borderLeftColor = getCategory(c.type).color;
   el.dataset.id = c.id;
   const timeBadge = c.time ? `<span class="time-badge">🕐 ${c.time}</span><br>` : "";
   el.innerHTML = `
@@ -517,7 +635,8 @@ function buildCard(c){
 
 function buildEditCard(c){
   const el = document.createElement("div");
-  el.className = `card type-${c.type} editing`;
+  el.className = "card editing";
+  el.style.borderLeftColor = getCategory(c.type).color;
   el.dataset.id = c.id;
   const form = buildFormFields(c, c.col, (data) => {
     Object.assign(c, data);
@@ -536,19 +655,16 @@ function buildFormFields(existing, defaultCol, onSave, onCancel){
   const dayOptions = defaultColumns.map(col =>
     `<option value="${col.id}"${col.id === defaultCol ? " selected" : ""}>${col.title}</option>`
   ).join("");
+  const typeOptions = state.categories.map(cat =>
+    `<option value="${escapeAttr(cat.id)}">${cat.label}</option>`
+  ).join("");
   form.innerHTML = `
     <label>Title</label>
     <input type="text" class="f-title" placeholder="e.g. Sugarloaf cable car" value="${existing ? escapeAttr(existing.title) : ""}">
     <label>Price / notes</label>
     <input type="text" class="f-meta" placeholder="e.g. Adult R$199 / Child R$99" value="${existing ? escapeAttr(existing.meta) : ""}">
     <label>Category</label>
-    <select class="f-type">
-      <option value="free">Free / Recreio</option>
-      <option value="paid">Paid / short drive</option>
-      <option value="city">Classic Rio day trip</option>
-      <option value="adv">Adventure / splurge</option>
-      <option value="food">Food / restaurant</option>
-    </select>
+    <select class="f-type">${typeOptions}</select>
     <label>Day</label>
     <select class="f-col">${dayOptions}</select>
     <label>Time (optional)</label>
@@ -639,7 +755,7 @@ function attachDrag(el, id){
 
 document.getElementById("resetBtn").onclick = () => {
   if(confirm("Reset board to the default suggestions? This clears any changes.")){
-    state = { columns: defaultColumns, cards: defaultCards };
+    state = { columns: defaultColumns, cards: clone(defaultCards), categories: clone(defaultCategories) };
     save(); render();
   }
 };
