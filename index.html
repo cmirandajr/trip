@@ -10,137 +10,199 @@
     --paid:#ef6c00;
     --city:#1565c0;
     --adv:#6a1b9a;
-    --bg:#f4f5f7;
+    --bg:#eef1f6;
     --card-bg:#ffffff;
+    --ink:#1a1a2e;
+    --muted:#65697a;
+    --accent:#1565c0;
+    --accent-dark:#0d47a1;
   }
   *{box-sizing:border-box;}
   body{
     margin:0;
-    font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+    font-family:-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
     background:var(--bg);
-    color:#222;
+    color:var(--ink);
   }
   header{
-    padding:16px 20px 8px;
+    padding:22px 26px 20px;
+    background:linear-gradient(135deg,var(--accent),var(--accent-dark));
+    color:#fff;
+    box-shadow:0 2px 10px rgba(0,0,0,0.15);
   }
   header h1{
-    margin:0 0 4px;
-    font-size:1.4rem;
+    margin:0 0 6px;
+    font-size:1.5rem;
+    font-weight:700;
+    letter-spacing:-0.01em;
   }
   header p{
     margin:0;
-    color:#555;
+    color:rgba(255,255,255,0.85);
     font-size:0.9rem;
   }
   .legend{
     display:flex;
-    gap:14px;
+    gap:10px;
     flex-wrap:wrap;
-    padding:8px 20px 16px;
-    font-size:0.8rem;
-    color:#444;
+    padding:14px 26px;
+    font-size:0.78rem;
   }
   .legend span{
     display:inline-flex;
     align-items:center;
-    gap:5px;
+    gap:6px;
+    background:#fff;
+    border-radius:999px;
+    padding:5px 12px 5px 8px;
+    box-shadow:0 1px 2px rgba(0,0,0,0.08);
+    color:var(--muted);
   }
   .dot{
-    width:10px;height:10px;border-radius:50%;display:inline-block;
+    width:9px;height:9px;border-radius:50%;display:inline-block;
   }
   .board{
     display:flex;
     gap:14px;
-    padding:0 20px 30px;
+    padding:0 26px 32px;
     overflow-x:auto;
     align-items:flex-start;
   }
   .column{
-    background:#e9ebee;
-    border-radius:10px;
+    background:#fff;
+    border-radius:12px;
     width:250px;
     min-width:250px;
-    padding:10px;
+    padding:12px;
     display:flex;
     flex-direction:column;
-    min-height:200px;
+    min-height:160px;
+    box-shadow:0 1px 3px rgba(20,20,40,0.08);
+  }
+  .column.pinned{
+    position:sticky;
+    left:0;
+    z-index:5;
+    box-shadow:2px 0 8px rgba(20,20,40,0.15);
+  }
+  .column.today{
+    box-shadow:0 0 0 2px var(--accent), 0 4px 10px rgba(21,101,192,0.18);
   }
   .column h2{
-    font-size:0.95rem;
-    margin:2px 4px 10px;
+    font-size:0.86rem;
+    font-weight:700;
+    margin:2px 4px 12px;
     display:flex;
     justify-content:space-between;
+    align-items:baseline;
+    color:var(--ink);
+  }
+  .column.today h2 .coltitle::after{
+    content:" • today";
+    color:var(--accent);
+    font-weight:600;
   }
   .column h2 .count{
-    color:#888;
-    font-weight:normal;
-    font-size:0.8rem;
+    color:#9aa0ac;
+    font-weight:600;
+    font-size:0.74rem;
+    background:#f1f2f6;
+    border-radius:999px;
+    padding:1px 7px;
   }
   .cardlist{
     flex:1;
     min-height:40px;
     display:flex;
     flex-direction:column;
-    gap:8px;
+    gap:9px;
   }
   .cardlist.dragover{
-    background:rgba(0,0,0,0.06);
+    background:rgba(21,101,192,0.08);
     border-radius:8px;
   }
   .card{
     background:var(--card-bg);
-    border-radius:8px;
-    padding:10px 10px 8px;
-    box-shadow:0 1px 2px rgba(0,0,0,0.15);
-    border-left:5px solid #999;
+    border-radius:10px;
+    padding:10px 32px 9px 11px;
+    box-shadow:0 1px 2px rgba(20,20,40,0.1);
+    border-left:4px solid #999;
     cursor:grab;
     touch-action:none;
     user-select:none;
     position:relative;
+    transition:box-shadow 0.15s ease, transform 0.15s ease;
+  }
+  .card:hover{
+    box-shadow:0 4px 12px rgba(20,20,40,0.16);
+    transform:translateY(-1px);
   }
   .card.dragging{
     opacity:0.35;
   }
+  .card.editing{
+    cursor:default;
+    padding:10px;
+  }
   .card .title{
     font-weight:600;
-    font-size:0.88rem;
+    font-size:0.87rem;
     margin-bottom:4px;
-    padding-right:16px;
+    color:var(--ink);
   }
   .card .meta{
-    font-size:0.76rem;
-    color:#555;
-    line-height:1.35;
+    font-size:0.75rem;
+    color:var(--muted);
+    line-height:1.4;
   }
-  .card .del{
+  .card .time-badge{
+    display:inline-block;
+    font-size:0.7rem;
+    font-weight:600;
+    color:var(--accent-dark);
+    background:#e3edf9;
+    border-radius:999px;
+    padding:2px 8px;
+    margin-bottom:5px;
+  }
+  .card-actions{
     position:absolute;
     top:6px;
-    right:6px;
+    right:4px;
+    display:flex;
+    gap:2px;
+  }
+  .card-actions button{
     background:none;
     border:none;
-    color:#aaa;
+    color:#b3b6bf;
     font-size:0.85rem;
     cursor:pointer;
     line-height:1;
+    width:22px;
+    height:22px;
+    border-radius:5px;
   }
-  .card .del:hover{color:#c00;}
+  .card-actions .edit:hover{color:var(--accent);background:#e3edf9;}
+  .card-actions .del:hover{color:#c00;background:#fbe4e4;}
   .card.type-free{border-left-color:var(--free);}
   .card.type-paid{border-left-color:var(--paid);}
   .card.type-city{border-left-color:var(--city);}
   .card.type-adv{border-left-color:var(--adv);}
 
   .addbtn{
-    margin-top:8px;
+    margin-top:9px;
     background:none;
-    border:1px dashed #999;
-    border-radius:6px;
-    padding:6px;
-    font-size:0.8rem;
-    color:#555;
+    border:1px dashed #c3c6cf;
+    border-radius:8px;
+    padding:7px;
+    font-size:0.78rem;
+    color:var(--muted);
     cursor:pointer;
     width:100%;
+    transition:background 0.15s ease, border-color 0.15s ease;
   }
-  .addbtn:hover{background:rgba(0,0,0,0.04);}
+  .addbtn:hover{background:#f3f6fb;border-color:var(--accent);color:var(--accent);}
 
   .ghost{
     position:fixed;
@@ -152,7 +214,7 @@
   }
 
   .toolbar{
-    padding:0 20px 10px;
+    padding:0 26px 16px;
     display:flex;
     align-items:center;
     gap:10px;
@@ -160,24 +222,32 @@
   }
   .toolbar button{
     background:#fff;
-    border:1px solid #ccc;
-    border-radius:6px;
-    padding:6px 12px;
+    border:1px solid #d8dae0;
+    border-radius:8px;
+    padding:7px 13px;
     font-size:0.8rem;
     cursor:pointer;
+    color:var(--ink);
+    box-shadow:0 1px 2px rgba(20,20,40,0.06);
+    transition:background 0.15s ease;
   }
-  .toolbar button:hover{background:#f0f0f0;}
+  .toolbar button:hover{background:#f3f6fb;border-color:var(--accent);}
 
   .syncstatus{
-    font-size:0.78rem;
+    font-size:0.76rem;
+    font-weight:600;
     display:inline-flex;
     align-items:center;
     gap:6px;
-    color:#555;
+    color:var(--muted);
     margin-left:auto;
+    background:#fff;
+    border-radius:999px;
+    padding:6px 12px;
+    box-shadow:0 1px 2px rgba(20,20,40,0.06);
   }
   .syncstatus .sdot{
-    width:9px;height:9px;border-radius:50%;
+    width:8px;height:8px;border-radius:50%;
     background:#999;
     display:inline-block;
   }
@@ -185,46 +255,61 @@
   .syncstatus.offline .sdot{background:#999;}
   .syncstatus.error .sdot{background:#c00;}
 
-  /* tiny add-card form */
+  /* add / edit form */
   .form{
-    background:#fff;
-    border-radius:8px;
-    padding:8px;
-    margin-top:8px;
-    box-shadow:0 1px 2px rgba(0,0,0,0.15);
+    background:#fbfbfd;
+    border:1px solid #e3e5ea;
+    border-radius:10px;
+    padding:10px;
+    margin-top:9px;
   }
+  .form label{
+    display:block;
+    font-size:0.66rem;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:0.03em;
+    color:#9aa0ac;
+    margin:6px 0 3px;
+  }
+  .form label:first-child{margin-top:0;}
   .form input, .form select{
     width:100%;
-    margin-bottom:6px;
-    padding:5px 6px;
-    font-size:0.78rem;
+    margin-bottom:2px;
+    padding:6px 7px;
+    font-size:0.8rem;
     border:1px solid #ccc;
-    border-radius:5px;
+    border-radius:6px;
+    font-family:inherit;
   }
   .form .formbtns{
     display:flex;
     gap:6px;
+    margin-top:10px;
   }
   .form button{
     flex:1;
     font-size:0.78rem;
-    padding:5px;
-    border-radius:5px;
+    padding:6px;
+    border-radius:6px;
     border:1px solid #ccc;
     cursor:pointer;
   }
   .form button.primary{
-    background:#1565c0;
+    background:var(--accent);
     color:#fff;
-    border-color:#1565c0;
+    border-color:var(--accent);
+    font-weight:600;
   }
+  .form button.primary:hover{background:var(--accent-dark);}
+  .form button.cancel:hover{background:#f0f0f0;}
 </style>
 </head>
 <body>
 
 <header>
   <h1>Rio Itinerary Board — Mario &amp; Carlos</h1>
-  <p>Drag cards between columns to plan the ~3 weeks in Rio (27 Jun – 20 Jul). Staying at mom's house, Recreio dos Bandeirantes.</p>
+  <p>Drag cards onto a day to plan the ~3 weeks in Rio (27 Jun – 20 Jul). Staying at mom's house, Recreio dos Bandeirantes.</p>
 </header>
 
 <div class="legend">
@@ -248,9 +333,6 @@
 <script>
 const STORAGE_KEY = "rio-itinerary-board-v1";
 
-// Paste your Firebase web app config here (Firebase console > Project
-// settings > Your apps > the </> web app). Until you do, the board just
-// saves to this browser only (same as before).
 const firebaseConfig = {
   apiKey: "AIzaSyAstvkChWEP_HrLxPFCGDo4GrGing-PzUU",
   authDomain: "trip-br-sa.firebaseapp.com",
@@ -260,35 +342,66 @@ const firebaseConfig = {
   appId: "1:433238128762:web:037efa86b8ebaaf773e3c3",
 };
 
+// --- Trip dates: one column per day instead of generic weeks ---
+const TRIP_START = "2026-06-27";
+const TRIP_END = "2026-07-20";
+const WD = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+const MO = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
+function pad(n){ return n < 10 ? "0" + n : "" + n; }
+
+function generateTripDates(startISO, endISO){
+  const [sy, sm, sd] = startISO.split("-").map(Number);
+  const [ey, em, ed] = endISO.split("-").map(Number);
+  const dates = [];
+  let d = new Date(sy, sm - 1, sd);
+  const end = new Date(ey, em - 1, ed);
+  while(d <= end){
+    dates.push(`${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`);
+    d.setDate(d.getDate() + 1);
+  }
+  return dates;
+}
+function formatDayLabel(iso){
+  const [y, m, d] = iso.split("-").map(Number);
+  const dt = new Date(y, m - 1, d);
+  return `${WD[dt.getDay()]} ${d} ${MO[m - 1]}`;
+}
+function isDateCol(colId){
+  return /^\d{4}-\d{2}-\d{2}$/.test(colId);
+}
+function todayISO(){
+  const d = new Date();
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+}
+
+const TRIP_DATES = generateTripDates(TRIP_START, TRIP_END);
+
 const defaultColumns = [
   { id: "ideas", title: "Ideas (unscheduled)" },
-  { id: "week1", title: "Week 1" },
-  { id: "week2", title: "Week 2" },
-  { id: "week3", title: "Week 3" },
-  { id: "booked", title: "Booked / Done" },
+  ...TRIP_DATES.map(iso => ({ id: iso, title: formatDayLabel(iso) })),
+  { id: "booked", title: "Booked / Confirmed" },
 ];
 
 const defaultCards = [
-  { id:"c1", col:"ideas", type:"free", title:"Praia do Recreio", meta:"📍 Recreio · 👥 Both<br>💰 Free — beach day, surf vibe but family-friendly" },
-  { id:"c2", col:"ideas", type:"free", title:"Praia do Pontal", meta:"📍 Recreio · 👥 Both<br>💰 Free — calmer water on the right side, good for swimming" },
-  { id:"c3", col:"ideas", type:"free", title:"Parque Chico Mendes", meta:"📍 Recreio · 👥 Both<br>💰 Free — easy trails, sloths &amp; caimans, playground, picnic" },
-  { id:"c4", col:"ideas", type:"free", title:"Beach volleyball / futevôlei", meta:"📍 Recreio · 👥 Both<br>💰 Free — borrow a ball on the beach" },
-  { id:"c5", col:"ideas", type:"free", title:"Bike ride, beachfront ciclovia", meta:"📍 Recreio · 👥 Both<br>💰 ~R$20-40/hr rental (~AUD 6-11)" },
-  { id:"c6", col:"ideas", type:"paid", title:"Rio Water Planet", meta:"📍 Barra/Vargem Grande · 👥 Both<br>💰 Adult ~R$120 / Child ~R$60 (~AUD 33/17)" },
-  { id:"c7", col:"ideas", type:"paid", title:"Ilha da Gigoia boat trip", meta:"📍 Barra · 👥 Both<br>💰 R$3-7 crossing, or R$15-30 for a longer lagoon tour" },
-  { id:"c8", col:"ideas", type:"paid", title:"Barra World — Nerf/Gel Blaster arena", meta:"📍 Barra · 👥 Both<br>💰 ~R$60-100/session" },
-  { id:"c9", col:"ideas", type:"paid", title:"Museu Casa do Pontal", meta:"📍 Barra · 👥 Both<br>💰 Free, ~R$20 suggested donation — folk art, low-key" },
-  { id:"c10", col:"ideas", type:"paid", title:"Surf lesson, Macumba/Recreio", meta:"📍 Recreio · 👥 Both<br>💰 ~R$110-260/lesson — dad &amp; son lesson together" },
-  { id:"c11", col:"ideas", type:"city", title:"Sugarloaf cable car", meta:"📍 Urca · 👥 Both<br>💰 Adult R$199 / Child(6-21) R$99 (~AUD 55/27)" },
-  { id:"c12", col:"ideas", type:"city", title:"Christ the Redeemer (Corcovado train)", meta:"📍 Cosme Velho · 👥 Both<br>💰 Adult R$134 / Child(7-11) R$107 (~AUD 37/30)" },
-  { id:"c13", col:"ideas", type:"city", title:"AquaRio (aquarium, sharks)", meta:"📍 Gamboa · 👥 Both<br>💰 Adult ~R$80 / Child ~R$60 (~AUD 22/17)" },
-  { id:"c14", col:"ideas", type:"city", title:"BioParque do Rio (zoo)", meta:"📍 Quinta da Boa Vista · 👥 Both<br>💰 Adult ~R$40 / Child R$10-20 (~AUD 11/3-6)" },
-  { id:"c15", col:"ideas", type:"adv", title:"Go-kart racing", meta:"📍 Barra/city · 👥 Both<br>💰 ~R$60-150/session — most tracks OK for 7yo, check min age" },
-  { id:"c16", col:"ideas", type:"adv", title:"Maracanã Stadium tour", meta:"📍 Maracanã · 👥 Both<br>💰 Adult ~R$94 / Half ~R$47, under 5 free" },
-  { id:"c17", col:"ideas", type:"adv", title:"Helicopter tour over Rio", meta:"📍 Lagoa/Urca · 👥 Both<br>💰 From ~R$690-1040/person (15-30min) — splurge" },
+  { id:"c1", col:"ideas", type:"free", title:"Praia do Recreio", meta:"📍 Recreio · 👥 Both<br>💰 Free — beach day, surf vibe but family-friendly", time:"" },
+  { id:"c2", col:"ideas", type:"free", title:"Praia do Pontal", meta:"📍 Recreio · 👥 Both<br>💰 Free — calmer water on the right side, good for swimming", time:"" },
+  { id:"c3", col:"ideas", type:"free", title:"Parque Chico Mendes", meta:"📍 Recreio · 👥 Both<br>💰 Free — easy trails, sloths &amp; caimans, playground, picnic", time:"" },
+  { id:"c4", col:"ideas", type:"free", title:"Beach volleyball / futevôlei", meta:"📍 Recreio · 👥 Both<br>💰 Free — borrow a ball on the beach", time:"" },
+  { id:"c5", col:"ideas", type:"free", title:"Bike ride, beachfront ciclovia", meta:"📍 Recreio · 👥 Both<br>💰 ~R$20-40/hr rental (~AUD 6-11)", time:"" },
+  { id:"c6", col:"ideas", type:"paid", title:"Rio Water Planet", meta:"📍 Barra/Vargem Grande · 👥 Both<br>💰 Adult ~R$120 / Child ~R$60 (~AUD 33/17)", time:"" },
+  { id:"c7", col:"ideas", type:"paid", title:"Ilha da Gigoia boat trip", meta:"📍 Barra · 👥 Both<br>💰 R$3-7 crossing, or R$15-30 for a longer lagoon tour", time:"" },
+  { id:"c8", col:"ideas", type:"paid", title:"Barra World — Nerf/Gel Blaster arena", meta:"📍 Barra · 👥 Both<br>💰 ~R$60-100/session", time:"" },
+  { id:"c9", col:"ideas", type:"paid", title:"Museu Casa do Pontal", meta:"📍 Barra · 👥 Both<br>💰 Free, ~R$20 suggested donation — folk art, low-key", time:"" },
+  { id:"c10", col:"ideas", type:"paid", title:"Surf lesson, Macumba/Recreio", meta:"📍 Recreio · 👥 Both<br>💰 ~R$110-260/lesson — dad &amp; son lesson together", time:"" },
+  { id:"c11", col:"ideas", type:"city", title:"Sugarloaf cable car", meta:"📍 Urca · 👥 Both<br>💰 Adult R$199 / Child(6-21) R$99 (~AUD 55/27)", time:"" },
+  { id:"c12", col:"ideas", type:"city", title:"Christ the Redeemer (Corcovado train)", meta:"📍 Cosme Velho · 👥 Both<br>💰 Adult R$134 / Child(7-11) R$107 (~AUD 37/30)", time:"" },
+  { id:"c13", col:"ideas", type:"city", title:"AquaRio (aquarium, sharks)", meta:"📍 Gamboa · 👥 Both<br>💰 Adult ~R$80 / Child ~R$60 (~AUD 22/17)", time:"" },
+  { id:"c14", col:"ideas", type:"city", title:"BioParque do Rio (zoo)", meta:"📍 Quinta da Boa Vista · 👥 Both<br>💰 Adult ~R$40 / Child R$10-20 (~AUD 11/3-6)", time:"" },
+  { id:"c15", col:"ideas", type:"adv", title:"Go-kart racing", meta:"📍 Barra/city · 👥 Both<br>💰 ~R$60-150/session — most tracks OK for 7yo, check min age", time:"" },
+  { id:"c16", col:"ideas", type:"adv", title:"Maracanã Stadium tour", meta:"📍 Maracanã · 👥 Both<br>💰 Adult ~R$94 / Half ~R$47, under 5 free", time:"" },
+  { id:"c17", col:"ideas", type:"adv", title:"Helicopter tour over Rio", meta:"📍 Lagoa/Urca · 👥 Both<br>💰 From ~R$690-1040/person (15-30min) — splurge", time:"" },
 ];
-
-let state = load();
 
 function load(){
   try{
@@ -297,6 +410,24 @@ function load(){
   }catch(e){}
   return { columns: defaultColumns, cards: defaultCards };
 }
+
+// Keeps cards from older saves (week1/week2/week3 columns, or anything
+// since-removed) instead of losing them — they fall back to Ideas and the
+// user can drag them onto a specific day.
+function migrate(s){
+  const validIds = new Set(defaultColumns.map(c => c.id));
+  s.cards = (s.cards || []).map(c => ({
+    time: "",
+    ...c,
+    col: validIds.has(c.col) ? c.col : "ideas",
+  }));
+  s.columns = defaultColumns;
+  return s;
+}
+
+let state = migrate(load());
+let editingId = null;
+
 function save(){
   try{
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
@@ -308,24 +439,44 @@ function save(){
 
 const board = document.getElementById("board");
 
+function escapeAttr(s){
+  return String(s == null ? "" : s)
+    .replace(/&/g, "&amp;")
+    .replace(/"/g, "&quot;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+
 function render(){
   board.innerHTML = "";
+  const today = todayISO();
   state.columns.forEach(col => {
-    const colCards = state.cards.filter(c => c.col === col.id);
+    let colCards = state.cards.filter(c => c.col === col.id);
+    if(isDateCol(col.id)){
+      colCards = colCards.slice().sort((a, b) => {
+        if(a.time && b.time) return a.time.localeCompare(b.time);
+        if(a.time) return -1;
+        if(b.time) return 1;
+        return 0;
+      });
+    }
+
     const colEl = document.createElement("div");
-    colEl.className = "column";
+    colEl.className = "column" + (col.id === "ideas" ? " pinned" : "") + (col.id === today ? " today" : "");
     colEl.dataset.col = col.id;
-    colEl.innerHTML = `<h2>${col.title} <span class="count">${colCards.length}</span></h2>`;
+    colEl.innerHTML = `<h2><span class="coltitle">${col.title}</span><span class="count">${colCards.length}</span></h2>`;
 
     const list = document.createElement("div");
     list.className = "cardlist";
     list.dataset.col = col.id;
-    colCards.forEach(c => list.appendChild(buildCard(c)));
+    colCards.forEach(c => {
+      list.appendChild(c.id === editingId ? buildEditCard(c) : buildCard(c));
+    });
     colEl.appendChild(list);
 
     const addBtn = document.createElement("button");
     addBtn.className = "addbtn";
-    addBtn.textContent = "+ Add idea";
+    addBtn.textContent = "+ Add";
     addBtn.onclick = () => showForm(colEl, col.id);
     colEl.appendChild(addBtn);
 
@@ -337,8 +488,13 @@ function buildCard(c){
   const el = document.createElement("div");
   el.className = `card type-${c.type}`;
   el.dataset.id = c.id;
+  const timeBadge = c.time ? `<span class="time-badge">🕐 ${c.time}</span><br>` : "";
   el.innerHTML = `
-    <button class="del" title="remove">×</button>
+    <div class="card-actions">
+      <button class="edit" title="edit">✎</button>
+      <button class="del" title="remove">×</button>
+    </div>
+    ${timeBadge}
     <div class="title">${c.title}</div>
     <div class="meta">${c.meta}</div>
   `;
@@ -347,37 +503,79 @@ function buildCard(c){
     state.cards = state.cards.filter(x => x.id !== c.id);
     save(); render();
   };
+  el.querySelector(".edit").onclick = (e) => {
+    e.stopPropagation();
+    editingId = c.id;
+    render();
+  };
   attachDrag(el, c.id);
   return el;
 }
 
-function showForm(colEl, colId){
-  if(colEl.querySelector(".form")) return;
+function buildEditCard(c){
+  const el = document.createElement("div");
+  el.className = `card type-${c.type} editing`;
+  el.dataset.id = c.id;
+  const form = buildFormFields(c, c.col, (data) => {
+    Object.assign(c, data);
+    editingId = null;
+    save(); render();
+  }, () => { editingId = null; render(); });
+  form.style.marginTop = "0";
+  el.appendChild(form);
+  return el;
+}
+
+// Shared by the "+ Add" form and the in-place card editor.
+function buildFormFields(existing, defaultCol, onSave, onCancel){
   const form = document.createElement("div");
   form.className = "form";
+  const dayOptions = defaultColumns.map(col =>
+    `<option value="${col.id}"${col.id === defaultCol ? " selected" : ""}>${col.title}</option>`
+  ).join("");
   form.innerHTML = `
-    <input type="text" placeholder="Title" class="f-title">
-    <input type="text" placeholder="Price / notes" class="f-meta">
+    <label>Title</label>
+    <input type="text" class="f-title" placeholder="e.g. Sugarloaf cable car" value="${existing ? escapeAttr(existing.title) : ""}">
+    <label>Price / notes</label>
+    <input type="text" class="f-meta" placeholder="e.g. Adult R$199 / Child R$99" value="${existing ? escapeAttr(existing.meta) : ""}">
+    <label>Category</label>
     <select class="f-type">
       <option value="free">Free / Recreio</option>
       <option value="paid">Paid / short drive</option>
       <option value="city">Classic Rio day trip</option>
       <option value="adv">Adventure / splurge</option>
     </select>
+    <label>Day</label>
+    <select class="f-col">${dayOptions}</select>
+    <label>Time (optional)</label>
+    <input type="time" class="f-time" value="${existing ? escapeAttr(existing.time || "") : ""}">
     <div class="formbtns">
-      <button class="primary">Add</button>
+      <button class="primary">${existing ? "Save" : "Add"}</button>
       <button class="cancel">Cancel</button>
     </div>
   `;
+  if(existing) form.querySelector(".f-type").value = existing.type;
   form.querySelector(".primary").onclick = () => {
     const title = form.querySelector(".f-title").value.trim();
-    const meta = form.querySelector(".f-meta").value.trim();
-    const type = form.querySelector(".f-type").value;
     if(!title) return;
-    state.cards.push({ id:"c"+Date.now(), col:colId, type, title, meta: meta || "" });
-    save(); render();
+    onSave({
+      title,
+      meta: form.querySelector(".f-meta").value.trim(),
+      type: form.querySelector(".f-type").value,
+      col: form.querySelector(".f-col").value,
+      time: form.querySelector(".f-time").value,
+    });
   };
-  form.querySelector(".cancel").onclick = () => render();
+  form.querySelector(".cancel").onclick = onCancel;
+  return form;
+}
+
+function showForm(colEl, colId){
+  if(colEl.querySelector(".form")) return;
+  const form = buildFormFields(null, colId, (data) => {
+    state.cards.push({ id: "c" + Date.now(), ...data });
+    save(); render();
+  }, () => render());
   colEl.insertBefore(form, colEl.querySelector(".addbtn"));
 }
 
@@ -386,6 +584,7 @@ let dragData = null;
 
 function attachDrag(el, id){
   el.addEventListener("pointerdown", (e) => {
+    if(e.target.closest(".card-actions")) return;
     e.preventDefault();
     const rect = el.getBoundingClientRect();
     dragData = {
@@ -448,9 +647,6 @@ document.getElementById("clearBtn").onclick = () => {
 };
 
 // --- Online sync (Firebase Firestore) ---
-// Only activates once you paste real config values above. Until then
-// this whole block is skipped and the board behaves exactly as before
-// (saved to this browser only).
 let boardDocRef = null;
 
 function setSyncStatus(mode, text){
@@ -476,7 +672,7 @@ if(firebaseReady){
     boardDocRef.onSnapshot(
       (doc) => {
         if(doc.exists){
-          state = doc.data();
+          state = migrate(doc.data());
         }else{
           boardDocRef.set(state).catch(() => {});
         }
