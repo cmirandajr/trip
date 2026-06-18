@@ -2,58 +2,44 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="theme-color" content="#1565c0">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Rio Trip">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌴</text></svg>">
-<title>Rio Itinerary Board — Mario & Carlos</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mario & Carlos · Holiday in Rio</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700;12..96,800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#eef1f6;
+    --bg:#eef5f6;
     --card-bg:#ffffff;
-    --ink:#1a1a2e;
-    --muted:#65697a;
-    --accent:#1565c0;
-    --accent-dark:#0d47a1;
+    --ink:#1a2b2e;
+    --muted:#5a6f73;
+    --accent:#0e8fae;
+    --accent-dark:#0c6f89;
   }
   *{box-sizing:border-box;}
-  html{-webkit-text-size-adjust:100%;}
   body{
     margin:0;
-    font-family:'Inter',-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    font-family:'DM Sans',-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
     background:var(--bg);
     color:var(--ink);
-    -webkit-font-smoothing:antialiased;
-    text-rendering:optimizeLegibility;
   }
   header{
-    padding:26px 26px 22px;
-    background:linear-gradient(135deg,var(--accent),var(--accent-dark));
+    padding:22px 26px 20px;
+    background:linear-gradient(112deg,#22cad9 0%,#0e8aa8 100%);
     color:#fff;
-    box-shadow:0 2px 10px rgba(0,0,0,0.15);
+    box-shadow:0 2px 10px rgba(20,60,70,0.18);
   }
   header h1{
     margin:0 0 6px;
-    font-size:1.55rem;
-    font-weight:800;
+    font-family:'Bricolage Grotesque',sans-serif;
+    font-size:1.6rem;
+    font-weight:700;
     letter-spacing:-0.02em;
   }
   header p{
     margin:0;
     color:rgba(255,255,255,0.85);
     font-size:0.9rem;
-  }
-  .controls-bar{
-    position:sticky;
-    top:0;
-    z-index:20;
-    background:var(--bg);
-    box-shadow:0 3px 8px rgba(20,20,40,0.07);
   }
   .legendwrap{
     position:relative;
@@ -128,16 +114,10 @@
   .board{
     display:flex;
     gap:14px;
-    padding:14px 26px 32px;
+    padding:0 26px 32px;
     overflow-x:auto;
     align-items:flex-start;
-    scrollbar-width:thin;
-    scrollbar-color:#c7cbd4 transparent;
   }
-  .board::-webkit-scrollbar{height:9px;}
-  .board::-webkit-scrollbar-track{background:transparent;}
-  .board::-webkit-scrollbar-thumb{background:#c7cbd4;border-radius:5px;}
-  .board::-webkit-scrollbar-thumb:hover{background:#aab0bd;}
   .weekstack{
     display:flex;
     flex-direction:column;
@@ -171,7 +151,7 @@
     display:flex;
     flex-direction:column;
     min-height:160px;
-    box-shadow:0 1px 3px rgba(20,20,40,0.08);
+    box-shadow:0 1px 3px rgba(20,60,70,0.1);
   }
   .column.pinned{
     position:sticky;
@@ -183,7 +163,8 @@
     box-shadow:0 0 0 2px var(--accent), 0 4px 10px rgba(21,101,192,0.18);
   }
   .column h2{
-    font-size:0.86rem;
+    font-family:'Bricolage Grotesque',sans-serif;
+    font-size:0.92rem;
     font-weight:700;
     margin:2px 4px 12px;
     display:flex;
@@ -215,20 +196,11 @@
     background:rgba(21,101,192,0.08);
     border-radius:8px;
   }
-  .cardlist:empty::after{
-    content:"No plans yet";
-    display:block;
-    text-align:center;
-    font-size:0.74rem;
-    font-style:italic;
-    color:#c3c6cf;
-    padding:16px 4px;
-  }
   .card{
     background:var(--card-bg);
-    border-radius:11px;
+    border-radius:12px;
     padding:10px 32px 9px 11px;
-    box-shadow:0 1px 2px rgba(20,20,40,0.1);
+    box-shadow:0 1px 2px rgba(20,60,70,0.12);
     border-left:4px solid #999;
     cursor:grab;
     touch-action:none;
@@ -237,7 +209,7 @@
     transition:box-shadow 0.15s ease, transform 0.15s ease;
   }
   .card:hover{
-    box-shadow:0 4px 12px rgba(20,20,40,0.16);
+    box-shadow:0 6px 16px rgba(20,60,70,0.18);
     transform:translateY(-1px);
   }
   .card.dragging{
@@ -248,8 +220,10 @@
     padding:10px;
   }
   .card .title{
+    font-family:'Bricolage Grotesque',sans-serif;
     font-weight:600;
-    font-size:0.87rem;
+    font-size:0.92rem;
+    letter-spacing:-0.01em;
     margin-bottom:4px;
     color:var(--ink);
     cursor:pointer;
@@ -266,8 +240,8 @@
     display:inline-block;
     font-size:0.7rem;
     font-weight:600;
-    color:var(--accent-dark);
-    background:#e3edf9;
+    color:#0e7d99;
+    background:#e2f4f7;
     border-radius:999px;
     padding:2px 8px;
     margin-bottom:5px;
@@ -361,6 +335,45 @@
     transition:background 0.15s ease;
   }
   .toolbar button:hover{background:#f3f6fb;border-color:var(--accent);}
+  #todayBtn{font-size:0.74rem;padding:6px 11px;white-space:nowrap;}
+
+  .iconbtn{
+    width:40px;height:40px;
+    display:inline-flex;align-items:center;justify-content:center;
+    background:#fff;border:1px solid #d8dae0;border-radius:9px;
+    cursor:pointer;color:var(--muted);padding:0;
+    box-shadow:0 1px 2px rgba(20,20,40,0.06);
+    transition:background .15s ease,border-color .15s ease,color .15s ease;
+  }
+  .iconbtn:hover{background:#f1fafc;border-color:var(--accent);color:var(--accent);}
+  .iconbtn svg{width:21px;height:21px;display:block;}
+  .iconbtn.danger:hover{background:#fff5f5;border-color:#c00;color:#c00;}
+  .iconbtn.filtering{background:#e2f4f7;border-color:#0e8fae;color:#0e7d99;}
+
+  .searchwrap{display:flex;align-items:center;}
+  .searchwrap.collapsed #searchBox{
+    width:0;min-width:0;padding-left:0;padding-right:0;
+    border-width:0;opacity:0;margin:0;pointer-events:none;
+  }
+  .searchwrap:not(.collapsed) #searchToggle{display:none;}
+
+  .filterwrap{position:relative;}
+  .filtermenu{
+    position:absolute;top:42px;left:0;z-index:50;
+    background:#fff;border:1px solid #e2e4ea;border-radius:10px;
+    box-shadow:0 8px 22px rgba(20,40,50,.16);
+    padding:6px;min-width:178px;display:none;
+  }
+  .filtermenu.open{display:block;}
+  .filtermenu button{
+    display:flex;align-items:center;gap:8px;width:100%;
+    background:none;border:none;border-radius:7px;padding:8px 9px;
+    font:500 0.8rem 'DM Sans',sans-serif;color:var(--ink);
+    cursor:pointer;text-align:left;box-shadow:none;
+  }
+  .filtermenu button:hover{background:#f1fafc;border-color:transparent;}
+  .filtermenu button.active{background:#e2f4f7;color:#0e7d99;font-weight:600;}
+  .filtermenu .swatch{width:10px;height:10px;border-radius:50%;flex:none;}
 
   .viewtoggle{
     display:flex;
@@ -392,29 +405,38 @@
     cursor:pointer;
   }
   .searchbox{
-    padding:7px 12px;
+    padding:7px 12px 7px 31px;
     font-size:0.8rem;
     border:1px solid #d8dae0;
-    border-radius:8px;
+    border-radius:9px;
     font-family:inherit;
-    min-width:160px;
+    width:190px;
+    box-sizing:border-box;
+    background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23a6b6ba' stroke-width='2.4' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cline x1='21' y1='21' x2='16.5' y2='16.5'/%3E%3C/svg%3E") no-repeat 10px center;
+    background-size:13px;
+    transition:width .22s ease,opacity .18s ease,padding .22s ease;
+  }
+  .searchbox:focus{
+    outline:none;
+    border-color:var(--accent);
+    box-shadow:0 0 0 3px rgba(14,143,174,0.15);
   }
 
   .syncstatus{
-    font-size:0.76rem;
+    font-size:0.68rem;
     font-weight:600;
     display:inline-flex;
     align-items:center;
-    gap:6px;
+    gap:5px;
     color:var(--muted);
     margin-left:auto;
     background:#fff;
     border-radius:999px;
-    padding:6px 12px;
+    padding:5px 10px;
     box-shadow:0 1px 2px rgba(20,20,40,0.06);
   }
   .syncstatus .sdot{
-    width:8px;height:8px;border-radius:50%;
+    width:7px;height:7px;border-radius:50%;
     background:#999;
     display:inline-block;
   }
@@ -572,77 +594,39 @@
     cursor:pointer;
   }
   .modal-close:hover{background:#e3e5ea;}
-
-  /* ---------- Mobile (phone-width) polish ---------- */
-  @media (max-width: 700px){
-    header{padding:18px 16px 16px;}
-    header h1{font-size:1.2rem;}
-    header p{font-size:0.8rem;}
-    .legend{padding:10px 16px;}
-    .catform{left:16px;right:16px;width:auto;}
-    .toolbar{padding:0 16px 14px;}
-    .searchbox{flex:1 1 100%;order:1;}
-    .syncstatus{margin-left:0;flex:1 1 100%;justify-content:center;order:2;}
-    .board{padding:10px 16px 28px;scroll-snap-type:x mandatory;}
-    .column{
-      width:85vw;
-      min-width:85vw;
-      scroll-snap-align:start;
-    }
-    .weekstack{
-      scroll-snap-align:start;
-      flex:0 0 auto;
-      width:85vw;
-    }
-    .column.pinned{
-      position:static;
-    }
-    .card{padding:12px 38px 11px 13px;}
-    .card-actions{top:8px;right:6px;gap:4px;}
-    .card-actions button{width:30px;height:30px;font-size:1rem;}
-    .card-actions .star{font-size:1.2rem;}
-    .modal-backdrop{align-items:flex-end;padding:0;}
-    .modal-panel{
-      width:100%;
-      max-width:100%;
-      max-height:90vh;
-      border-radius:18px 18px 0 0;
-      padding:20px 20px max(20px, env(safe-area-inset-bottom));
-      animation:sheetUp 0.22s ease-out;
-    }
-  }
-  @keyframes sheetUp{
-    from{ transform:translateY(100%); }
-    to{ transform:translateY(0); }
-  }
 </style>
 </head>
 <body>
 
 <header>
-  <h1>Rio Itinerary Board — Mario &amp; Carlos</h1>
+  <h1>Mario &amp; Carlos · Holiday in Rio</h1>
   <p>Drag cards onto a day to plan the ~3 weeks in Rio (27 Jun – 20 Jul). Staying at mom's house, Recreio dos Bandeirantes.</p>
 </header>
 
-<div class="controls-bar">
-  <div class="legendwrap" id="legendWrap">
-    <div class="legend" id="legend"></div>
-  </div>
+<div class="legendwrap" id="legendWrap">
+  <div class="legend" id="legend"></div>
+</div>
 
-  <div class="toolbar">
-    <button id="resetBtn">Reset to default layout</button>
-    <button id="clearBtn">Clear board (start empty)</button>
-    <button id="todayBtn">📍 Jump to today</button>
+<div class="toolbar">
+  <button id="resetBtn" class="iconbtn" title="Reset to default layout" aria-label="Reset to default layout"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg></button>
+  <button id="clearBtn" class="iconbtn danger" title="Clear board (start empty)" aria-label="Clear board"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg></button>
+  <button id="todayBtn">📍 Jump to today</button>
+  <div class="searchwrap collapsed" id="searchWrap">
+    <button class="iconbtn" id="searchToggle" title="Search cards" aria-label="Search cards"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg></button>
     <input type="text" id="searchBox" class="searchbox" placeholder="Search cards…">
-    <div class="viewtoggle" id="viewToggle">
-      <button data-view="day">Day view</button>
-      <button data-view="week">Week view</button>
-    </div>
-    <label class="hideempty" id="hideEmptyWrap">
-      <input type="checkbox" id="hideEmptyChk"> Hide empty days
-    </label>
-    <span class="syncstatus offline" id="syncStatus"><span class="sdot"></span><span class="stext">Saved on this device only</span></span>
   </div>
+  <div class="filterwrap" id="filterWrap">
+    <button class="iconbtn" id="filterToggle" title="Filter by category" aria-label="Filter by category"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5h18l-7 8v6l-4 2v-8z"/></svg></button>
+    <div class="filtermenu" id="filterMenu"></div>
+  </div>
+  <div class="viewtoggle" id="viewToggle">
+    <button data-view="day">Day view</button>
+    <button data-view="week">Week view</button>
+  </div>
+  <label class="hideempty" id="hideEmptyWrap">
+    <input type="checkbox" id="hideEmptyChk"> Hide empty days
+  </label>
+  <span class="syncstatus offline" id="syncStatus"><span class="sdot"></span><span class="stext">Saved on this device only</span></span>
 </div>
 
 <div class="board" id="board"></div>
@@ -988,6 +972,7 @@ function renderViewToggle(){
 function render(){
   renderLegend();
   renderViewToggle();
+  updateFilterIndicator();
   board.innerHTML = "";
   const today = todayISO();
 
@@ -1355,8 +1340,54 @@ document.getElementById("searchBox").oninput = (e) => {
   searchQuery = e.target.value.trim().toLowerCase();
   render();
 };
+
+// --- Expandable search ---
+const searchWrap = document.getElementById("searchWrap");
+const searchBoxEl = document.getElementById("searchBox");
+document.getElementById("searchToggle").onclick = () => {
+  searchWrap.classList.remove("collapsed");
+  searchBoxEl.focus();
+};
+searchBoxEl.addEventListener("blur", () => {
+  if(!searchBoxEl.value.trim()) searchWrap.classList.add("collapsed");
+});
+
+// --- Category filter menu ---
+const filterMenu = document.getElementById("filterMenu");
+const filterToggle = document.getElementById("filterToggle");
+function updateFilterIndicator(){
+  filterToggle.classList.toggle("filtering", !!activeCategoryFilter);
+}
+function buildFilterMenu(){
+  filterMenu.innerHTML = "";
+  const allBtn = document.createElement("button");
+  allBtn.className = !activeCategoryFilter ? "active" : "";
+  allBtn.innerHTML = '<span class="swatch" style="background:#cdd3da"></span>All categories';
+  allBtn.onclick = () => { activeCategoryFilter = null; filterMenu.classList.remove("open"); render(); };
+  filterMenu.appendChild(allBtn);
+  state.categories.forEach(cat => {
+    const b = document.createElement("button");
+    b.className = activeCategoryFilter === cat.id ? "active" : "";
+    b.innerHTML = '<span class="swatch" style="background:' + cat.color + '"></span>' + cat.label;
+    b.onclick = () => { activeCategoryFilter = cat.id; filterMenu.classList.remove("open"); render(); };
+    filterMenu.appendChild(b);
+  });
+}
+filterToggle.onclick = (e) => {
+  e.stopPropagation();
+  if(filterMenu.classList.contains("open")){
+    filterMenu.classList.remove("open");
+  } else {
+    buildFilterMenu();
+    filterMenu.classList.add("open");
+  }
+};
+document.addEventListener("click", (e) => {
+  if(!document.getElementById("filterWrap").contains(e.target)) filterMenu.classList.remove("open");
+});
+
 document.addEventListener("keydown", (e) => {
-  if(e.key === "Escape") closeCardDetail();
+  if(e.key === "Escape"){ closeCardDetail(); filterMenu.classList.remove("open"); }
 });
 
 // --- Online sync (Firebase Firestore) ---
