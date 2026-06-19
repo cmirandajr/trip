@@ -4,6 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Mario & Carlos · Holiday in Rio</title>
+<meta name="theme-color" content="#0e8fae">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Rio Trip">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌴</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700;12..96,800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
@@ -41,6 +46,13 @@
     color:rgba(255,255,255,0.85);
     font-size:0.9rem;
   }
+  .controls-bar{
+    position:sticky;
+    top:0;
+    z-index:20;
+    background:var(--bg);
+    box-shadow:0 3px 8px rgba(20,20,40,0.07);
+  }
   .legendwrap{
     position:relative;
   }
@@ -61,29 +73,10 @@
     padding:5px 10px 5px 8px;
     box-shadow:0 1px 2px rgba(0,0,0,0.08);
     color:var(--muted);
-    cursor:pointer;
   }
-  .legend span:hover{background:#f3f6fb;}
-  .legend span.active{
-    background:var(--accent);
-    color:#fff;
-    box-shadow:0 1px 4px rgba(21,101,192,0.4);
-  }
-  .legend span.active .legend-edit{color:rgba(255,255,255,0.85);}
-  .legend span.active .legend-edit:hover{color:#fff;}
   .dot{
     width:9px;height:9px;border-radius:50%;display:inline-block;
   }
-  .clearfilterbtn{
-    background:none;
-    border:1px solid #d8dae0;
-    border-radius:999px;
-    padding:5px 12px;
-    font-size:0.78rem;
-    color:var(--muted);
-    cursor:pointer;
-  }
-  .clearfilterbtn:hover{background:#fff;border-color:#c00;color:#c00;}
   .legend-edit{
     background:none;
     border:none;
@@ -117,7 +110,13 @@
     padding:0 26px 32px;
     overflow-x:auto;
     align-items:flex-start;
+    scrollbar-width:thin;
+    scrollbar-color:#b8c4c6 transparent;
   }
+  .board::-webkit-scrollbar{height:8px;}
+  .board::-webkit-scrollbar-track{background:transparent;}
+  .board::-webkit-scrollbar-thumb{background:#b8c4c6;border-radius:999px;}
+  .board::-webkit-scrollbar-thumb:hover{background:#9aabad;}
   .weekstack{
     display:flex;
     flex-direction:column;
@@ -196,6 +195,14 @@
     background:rgba(21,101,192,0.08);
     border-radius:8px;
   }
+  .cardlist:empty::after{
+    content:"No plans yet";
+    display:block;
+    text-align:center;
+    color:#c3cdcf;
+    font-size:0.78rem;
+    padding:14px 0;
+  }
   .card{
     background:var(--card-bg);
     border-radius:12px;
@@ -214,10 +221,6 @@
   }
   .card.dragging{
     opacity:0.35;
-  }
-  .card.editing{
-    cursor:default;
-    padding:10px;
   }
   .card .title{
     font-family:'Bricolage Grotesque',sans-serif;
@@ -242,6 +245,17 @@
     font-weight:600;
     color:#0e7d99;
     background:#e2f4f7;
+    border-radius:999px;
+    padding:2px 8px;
+    margin-bottom:5px;
+    margin-right:4px;
+  }
+  .card .col-badge{
+    display:inline-block;
+    font-size:0.7rem;
+    font-weight:600;
+    color:var(--muted);
+    background:#eef0f3;
     border-radius:999px;
     padding:2px 8px;
     margin-bottom:5px;
@@ -537,6 +551,9 @@
     overflow-y:auto;
     box-shadow:0 10px 40px rgba(0,0,0,0.3);
   }
+  .modal-panel.form-panel{
+    max-width:480px;
+  }
   .modal-title{
     font-size:1.1rem;
     font-weight:700;
@@ -594,6 +611,58 @@
     cursor:pointer;
   }
   .modal-close:hover{background:#e3e5ea;}
+
+  @media (max-width:700px){
+    header{padding:16px 16px 14px;}
+    header h1{font-size:1.25rem;}
+    header p{font-size:0.8rem;}
+    .legend{padding:10px 16px;font-size:0.72rem;}
+    .toolbar{padding:0 16px 12px;gap:7px;}
+    .board{padding:0 16px 24px;}
+    .searchbox{width:140px;}
+    .searchwrap{flex:1 1 100%;order:5;}
+    #hideEmptyWrap{font-size:0.74rem;}
+    .syncstatus{order:6;margin-left:0;}
+
+    .board{
+      scroll-snap-type:x mandatory;
+    }
+    .column{
+      width:85vw;
+      min-width:85vw;
+      scroll-snap-align:start;
+    }
+    .weekstack{
+      flex:0 0 auto;
+      width:85vw;
+    }
+    .column.pinned{
+      position:static;
+    }
+
+    .card-actions button{
+      width:30px;
+      height:30px;
+      font-size:1rem;
+    }
+
+    .modal-backdrop{
+      align-items:flex-end;
+      padding:0;
+    }
+    .modal-panel{
+      max-width:none;
+      width:100%;
+      max-height:88vh;
+      border-radius:18px 18px 0 0;
+      padding:18px 18px calc(18px + env(safe-area-inset-bottom));
+      animation:sheetUp 0.22s ease-out;
+    }
+    @keyframes sheetUp{
+      from{transform:translateY(100%);}
+      to{transform:translateY(0);}
+    }
+  }
 </style>
 </head>
 <body>
@@ -603,30 +672,33 @@
   <p>Drag cards onto a day to plan the ~3 weeks in Rio (27 Jun – 20 Jul). Staying at mom's house, Recreio dos Bandeirantes.</p>
 </header>
 
-<div class="legendwrap" id="legendWrap">
-  <div class="legend" id="legend"></div>
-</div>
+<div class="controls-bar">
+  <div class="legendwrap" id="legendWrap">
+    <div class="legend" id="legend"></div>
+  </div>
 
-<div class="toolbar">
-  <button id="resetBtn" class="iconbtn" title="Reset to default layout" aria-label="Reset to default layout"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg></button>
-  <button id="clearBtn" class="iconbtn danger" title="Clear board (start empty)" aria-label="Clear board"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg></button>
-  <button id="todayBtn">📍 Jump to today</button>
-  <div class="searchwrap collapsed" id="searchWrap">
-    <button class="iconbtn" id="searchToggle" title="Search cards" aria-label="Search cards"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg></button>
-    <input type="text" id="searchBox" class="searchbox" placeholder="Search cards…">
+  <div class="toolbar">
+    <button id="resetBtn" class="iconbtn" title="Reset to default layout" aria-label="Reset to default layout"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg></button>
+    <button id="clearBtn" class="iconbtn danger" title="Clear board (start empty)" aria-label="Clear board"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg></button>
+    <button id="todayBtn">📍 Jump to today</button>
+    <div class="searchwrap collapsed" id="searchWrap">
+      <button class="iconbtn" id="searchToggle" title="Search cards" aria-label="Search cards"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg></button>
+      <input type="text" id="searchBox" class="searchbox" placeholder="Search cards…">
+    </div>
+    <div class="filterwrap" id="filterWrap">
+      <button class="iconbtn" id="filterToggle" title="Filter by category" aria-label="Filter by category"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5h18l-7 8v6l-4 2v-8z"/></svg></button>
+      <div class="filtermenu" id="filterMenu"></div>
+    </div>
+    <div class="viewtoggle" id="viewToggle">
+      <button data-view="day">Day view</button>
+      <button data-view="week">Week view</button>
+      <button data-view="category">Category view</button>
+    </div>
+    <label class="hideempty" id="hideEmptyWrap">
+      <input type="checkbox" id="hideEmptyChk"> Hide empty days
+    </label>
+    <span class="syncstatus offline" id="syncStatus"><span class="sdot"></span><span class="stext">Saved on this device only</span></span>
   </div>
-  <div class="filterwrap" id="filterWrap">
-    <button class="iconbtn" id="filterToggle" title="Filter by category" aria-label="Filter by category"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5h18l-7 8v6l-4 2v-8z"/></svg></button>
-    <div class="filtermenu" id="filterMenu"></div>
-  </div>
-  <div class="viewtoggle" id="viewToggle">
-    <button data-view="day">Day view</button>
-    <button data-view="week">Week view</button>
-  </div>
-  <label class="hideempty" id="hideEmptyWrap">
-    <input type="checkbox" id="hideEmptyChk"> Hide empty days
-  </label>
-  <span class="syncstatus offline" id="syncStatus"><span class="sdot"></span><span class="stext">Saved on this device only</span></span>
 </div>
 
 <div class="board" id="board"></div>
@@ -785,7 +857,6 @@ function getCategory(typeId){
 }
 
 let state = migrate(load());
-let editingId = null;
 let activeCategoryFilter = null;
 let searchQuery = "";
 
@@ -836,12 +907,6 @@ function renderLegend(){
   legend.innerHTML = "";
   state.categories.forEach(cat => {
     const span = document.createElement("span");
-    if(activeCategoryFilter === cat.id) span.classList.add("active");
-    span.title = "click to show only this category";
-    span.onclick = () => {
-      activeCategoryFilter = activeCategoryFilter === cat.id ? null : cat.id;
-      render();
-    };
     const dot = document.createElement("span");
     dot.className = "dot";
     dot.style.background = cat.color;
@@ -860,14 +925,6 @@ function renderLegend(){
   addBtn.textContent = "+ Category";
   addBtn.onclick = (e) => { e.stopPropagation(); showCategoryForm(null); };
   legend.appendChild(addBtn);
-
-  if(activeCategoryFilter){
-    const clearBtn = document.createElement("button");
-    clearBtn.className = "clearfilterbtn";
-    clearBtn.textContent = "✕ Show all categories";
-    clearBtn.onclick = () => { activeCategoryFilter = null; render(); };
-    legend.appendChild(clearBtn);
-  }
 }
 
 function closeCategoryForm(){
@@ -947,15 +1004,69 @@ function buildColumnEl(col, today){
   const list = document.createElement("div");
   list.className = "cardlist";
   list.dataset.col = col.id;
-  colCards.forEach(c => {
-    list.appendChild(c.id === editingId ? buildEditCard(c) : buildCard(c));
-  });
+  colCards.forEach(c => list.appendChild(buildCard(c)));
   colEl.appendChild(list);
 
   const addBtn = document.createElement("button");
   addBtn.className = "addbtn";
   addBtn.textContent = "+ Add";
-  addBtn.onclick = () => showForm(colEl, col.id);
+  addBtn.onclick = () => openFormModal(null, col.id);
+  colEl.appendChild(addBtn);
+
+  return colEl;
+}
+
+// Short label for a card's day/column, used as a badge in category view
+// where cards from every day are mixed together and the day isn't implied
+// by which column you're looking at.
+function shortColLabel(colId){
+  if(colId === "ideas") return "Unscheduled";
+  if(colId === "booked") return "Booked";
+  if(isDateCol(colId)) return formatShortDate(colId);
+  return colId;
+}
+
+// Groups every card by category regardless of which day/Ideas/Booked
+// column it's actually sitting in — cards whose category was since deleted
+// fall into a synthetic "Other" group instead of disappearing.
+function getCategoryGroups(){
+  const groups = state.categories.map(cat => ({ cat, cards: [] }));
+  const orphaned = [];
+  state.cards.forEach(c => {
+    const group = groups.find(g => g.cat.id === c.type);
+    if(group) group.cards.push(c);
+    else orphaned.push(c);
+  });
+  if(orphaned.length) groups.push({ cat: OTHER_CATEGORY, cards: orphaned });
+  return groups;
+}
+
+function buildCategoryColumnEl(cat, cards){
+  let filtered = cards;
+  if(searchQuery){
+    filtered = filtered.filter(c => {
+      const haystack = [c.title, c.meta, c.location, c.notes].join(" ").toLowerCase();
+      return haystack.includes(searchQuery);
+    });
+  }
+  const colOrder = state.columns.map(col => col.id);
+  filtered = filtered.slice().sort((a, b) => colOrder.indexOf(a.col) - colOrder.indexOf(b.col));
+
+  const colEl = document.createElement("div");
+  colEl.className = "column";
+  colEl.style.borderTop = `4px solid ${cat.color}`;
+  colEl.innerHTML = `<h2><span class="coltitle">${escapeAttr(cat.label)}</span><span class="count">${filtered.length}</span></h2>`;
+
+  const list = document.createElement("div");
+  list.className = "cardlist";
+  list.dataset.cat = cat.id;
+  filtered.forEach(c => list.appendChild(buildCard(c, { showColBadge: true })));
+  colEl.appendChild(list);
+
+  const addBtn = document.createElement("button");
+  addBtn.className = "addbtn";
+  addBtn.textContent = "+ Add";
+  addBtn.onclick = () => openFormModal(null, "ideas", cat.id);
   colEl.appendChild(addBtn);
 
   return colEl;
@@ -967,6 +1078,7 @@ function renderViewToggle(){
   });
   document.getElementById("hideEmptyWrap").style.display = viewPrefs.mode === "week" ? "flex" : "none";
   document.getElementById("hideEmptyChk").checked = viewPrefs.hideEmpty;
+  document.getElementById("todayBtn").style.display = viewPrefs.mode === "category" ? "none" : "";
 }
 
 function render(){
@@ -975,6 +1087,13 @@ function render(){
   updateFilterIndicator();
   board.innerHTML = "";
   const today = todayISO();
+
+  if(viewPrefs.mode === "category"){
+    let groups = getCategoryGroups();
+    if(activeCategoryFilter) groups = groups.filter(g => g.cat.id === activeCategoryFilter);
+    groups.forEach(g => board.appendChild(buildCategoryColumnEl(g.cat, g.cards)));
+    return;
+  }
 
   const ideasCol = state.columns.find(c => c.id === "ideas");
   const bookedCol = state.columns.find(c => c.id === "booked");
@@ -1015,7 +1134,8 @@ function render(){
   if(bookedCol) board.appendChild(buildColumnEl(bookedCol, today));
 }
 
-function buildCard(c){
+function buildCard(c, opts){
+  opts = opts || {};
   const el = document.createElement("div");
   el.className = "card";
   el.style.borderLeftColor = getCategory(c.type).color;
@@ -1024,6 +1144,7 @@ function buildCard(c){
   const who = getWho(c.who);
   const priorityBadge = prio.id ? `<span class="priority-badge" style="color:${prio.color}">${prio.emoji} ${prio.label}</span>` : "";
   const timeBadge = c.time ? `<span class="time-badge">🕐 ${c.time}</span>` : "";
+  const colBadge = opts.showColBadge ? `<span class="col-badge">📅 ${escapeAttr(shortColLabel(c.col))}</span>` : "";
   const whoBadge = who.icon ? `<span class="who-badge" title="${escapeAttr(who.label)}">${who.icon}</span>` : "";
   const locationRow = c.location ? `<div class="location-row">📍 ${escapeAttr(c.location)}</div>` : "";
   el.innerHTML = `
@@ -1032,7 +1153,7 @@ function buildCard(c){
       <button class="edit" title="edit">✎</button>
       <button class="del" title="remove">×</button>
     </div>
-    ${priorityBadge}${timeBadge}${whoBadge}
+    ${priorityBadge}${timeBadge}${colBadge}${whoBadge}
     <div class="title" title="click for details">${escapeAttr(c.title)}</div>
     <div class="meta">${c.meta}</div>
     ${locationRow}
@@ -1044,8 +1165,7 @@ function buildCard(c){
   };
   el.querySelector(".edit").onclick = (e) => {
     e.stopPropagation();
-    editingId = c.id;
-    render();
+    openFormModal(c, c.col);
   };
   el.querySelector(".star").onclick = (e) => {
     e.stopPropagation();
@@ -1060,20 +1180,20 @@ function buildCard(c){
   return el;
 }
 
-function closeCardDetail(){
+function closeModal(){
   const existing = document.querySelector(".modal-backdrop");
   if(existing) existing.remove();
 }
 
 function openCardDetail(c){
-  closeCardDetail();
+  closeModal();
   const cat = getCategory(c.type);
   const prio = getPriority(c.priority);
   const who = getWho(c.who);
 
   const backdrop = document.createElement("div");
   backdrop.className = "modal-backdrop";
-  backdrop.onclick = (e) => { if(e.target === backdrop) closeCardDetail(); };
+  backdrop.onclick = (e) => { if(e.target === backdrop) closeModal(); };
 
   const panel = document.createElement("div");
   panel.className = "modal-panel";
@@ -1144,37 +1264,57 @@ function openCardDetail(c){
   const closeBtn = document.createElement("button");
   closeBtn.className = "modal-close";
   closeBtn.textContent = "Close";
-  closeBtn.onclick = closeCardDetail;
+  closeBtn.onclick = closeModal;
   panel.appendChild(closeBtn);
 
   backdrop.appendChild(panel);
   document.body.appendChild(backdrop);
 }
 
-function buildEditCard(c){
-  const el = document.createElement("div");
-  el.className = "card editing";
-  el.style.borderLeftColor = getCategory(c.type).color;
-  el.dataset.id = c.id;
-  const form = buildFormFields(c, c.col, (data) => {
-    Object.assign(c, data);
-    editingId = null;
-    save(); render();
-  }, () => { editingId = null; render(); });
+// Add/edit form, opened as a popup so there's real room to read and write —
+// the old version squeezed this into the card's column width (~250px).
+function openFormModal(existing, defaultCol, defaultType){
+  closeModal();
+  const backdrop = document.createElement("div");
+  backdrop.className = "modal-backdrop";
+  backdrop.onclick = (e) => { if(e.target === backdrop) closeModal(); };
+
+  const panel = document.createElement("div");
+  panel.className = "modal-panel form-panel";
+  panel.style.borderTop = `4px solid ${existing ? getCategory(existing.type).color : "var(--accent)"}`;
+
+  const titleEl = document.createElement("div");
+  titleEl.className = "modal-title";
+  titleEl.textContent = existing ? "Edit plan" : "Add a plan";
+  panel.appendChild(titleEl);
+
+  const form = buildFormFields(existing, defaultCol, (data) => {
+    if(existing){
+      Object.assign(existing, data);
+    }else{
+      state.cards.push({ id: "c" + Date.now(), ...data });
+    }
+    save();
+    closeModal();
+    render();
+  }, () => closeModal(), defaultType);
   form.style.marginTop = "0";
-  el.appendChild(form);
-  return el;
+  panel.appendChild(form);
+
+  backdrop.appendChild(panel);
+  document.body.appendChild(backdrop);
 }
 
-// Shared by the "+ Add" form and the in-place card editor.
-function buildFormFields(existing, defaultCol, onSave, onCancel){
+// Shared by the "+ Add" form and the card editor (both opened via openFormModal).
+function buildFormFields(existing, defaultCol, onSave, onCancel, defaultType){
   const form = document.createElement("div");
   form.className = "form";
   const dayOptions = defaultColumns.map(col =>
     `<option value="${col.id}"${col.id === defaultCol ? " selected" : ""}>${col.title}</option>`
   ).join("");
+  const selectedType = existing ? existing.type : defaultType;
   const typeOptions = state.categories.map(cat =>
-    `<option value="${escapeAttr(cat.id)}">${cat.label}</option>`
+    `<option value="${escapeAttr(cat.id)}"${cat.id === selectedType ? " selected" : ""}>${cat.label}</option>`
   ).join("");
   const priorityOptions = PRIORITIES.map(p =>
     `<option value="${p.id}">${p.emoji ? p.emoji + " " : ""}${p.label}</option>`
@@ -1211,7 +1351,6 @@ function buildFormFields(existing, defaultCol, onSave, onCancel){
   `;
   form.querySelector(".f-notes").value = existing ? (existing.notes || "") : "";
   if(existing){
-    form.querySelector(".f-type").value = existing.type;
     form.querySelector(".f-priority").value = existing.priority || "";
     form.querySelector(".f-who").value = existing.who || "";
   }
@@ -1245,15 +1384,6 @@ function buildFormFields(existing, defaultCol, onSave, onCancel){
   };
   form.querySelector(".cancel").onclick = onCancel;
   return form;
-}
-
-function showForm(colEl, colId){
-  if(colEl.querySelector(".form")) return;
-  const form = buildFormFields(null, colId, (data) => {
-    state.cards.push({ id: "c" + Date.now(), ...data });
-    save(); render();
-  }, () => render());
-  colEl.insertBefore(form, colEl.querySelector(".addbtn"));
 }
 
 // pointer-based drag (works on touch + mouse)
@@ -1300,7 +1430,12 @@ function attachDrag(el, id){
       const list = under && under.closest(".cardlist");
       if(list){
         const card = state.cards.find(c => c.id === id);
-        if(card) card.col = list.dataset.col;
+        if(card){
+          // Category view's columns are categories, not days — dropping there
+          // recategorizes the card instead of rescheduling it.
+          if(list.dataset.cat) card.type = list.dataset.cat;
+          else if(list.dataset.col) card.col = list.dataset.col;
+        }
         save();
       }
       render();
@@ -1387,7 +1522,7 @@ document.addEventListener("click", (e) => {
 });
 
 document.addEventListener("keydown", (e) => {
-  if(e.key === "Escape"){ closeCardDetail(); filterMenu.classList.remove("open"); }
+  if(e.key === "Escape"){ closeModal(); filterMenu.classList.remove("open"); }
 });
 
 // --- Online sync (Firebase Firestore) ---
